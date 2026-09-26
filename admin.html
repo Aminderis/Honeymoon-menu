@@ -151,7 +151,7 @@ async function loadMenu(){
       statusEl.className = 'status err';
       return;
     }
-    draft = JSON.parse(match[1]);
+    draft = (new Function('return (' + match[1] + ')'))();
     statusEl.textContent = 'وصل شد.';
     statusEl.className = 'status ok';
     document.getElementById('editorCard').classList.remove('hidden');
