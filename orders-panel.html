@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>پنل سفارشات هانی‌مون</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --coffee-900:#2B1B12; --coffee-700:#4A3221; --cream:#F2E8DC; --paper:#FAF6F0;
+    --amber:#C08552; --olive:#6B7654; --line: rgba(43,27,18,0.16);
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{ background:var(--paper); color:var(--coffee-900); font-family:'Vazirmatn',sans-serif; padding:18px 14px 60px; }
+  .wrap{ max-width:640px; margin:0 auto; }
+  header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  h1{ font-size:1.3rem; font-weight:800; margin:0; }
+  .status-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; background:#c0392b; margin-left:6px; }
+  .status-dot.live{ background:var(--olive); }
+  .status-text{ font-size:0.8rem; color:#6b5c4e; }
+
+  .enable-sound{ background:var(--coffee-900); color:var(--cream); border:none; border-radius:10px; padding:10px 16px; font-weight:700; font-size:0.85rem; font-family:inherit; cursor:pointer; margin-bottom:16px; width:100%; }
+
+  .order{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px; position:relative; }
+  .order.dine{ border-right:6px solid #2E9E5B; background:#F1F9F4; }
+  .order.take{ border-right:6px solid #2F7BDB; background:#EEF5FD; }
+  .order.new{ box-shadow:0 0 0 2px rgba(192,133,82,0.45); }
+  .badge{ display:inline-block; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; color:#fff; margin-right:8px; }
+  .badge.dine{ background:#2E9E5B; }
+  .badge.take{ background:#2F7BDB; }
+  .order-contact{ font-size:0.88rem; margin:6px 0; line-height:1.8; }
+  .order-contact a{ color:#2F7BDB; font-weight:700; text-decoration:none; }
+  .order-fees{ font-size:0.78rem; color:#6b5c4e; margin-top:4px; }
+  .order.done{ opacity:0.5; }
+  .order-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .order-name{ font-weight:700; font-size:1.05rem; }
+  .order-time{ font-size:0.75rem; color:#9a8a7c; }
+  .order-code{ font-size:0.75rem; color:var(--amber); font-weight:700; }
+  .order-items{ font-size:0.9rem; color:var(--coffee-700); line-height:1.7; margin:6px 0; }
+  .order-note{ font-size:0.82rem; color:#6b5c4e; margin:4px 0; }
+  .order-total{ font-weight:700; color:var(--amber); margin-top:6px; }
+  .order-actions{ margin-top:10px; }
+  .done-btn{ background:var(--olive); color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:0.82rem; font-weight:700; font-family:inherit; cursor:pointer; }
+  .done-btn:disabled{ opacity:0.5; }
+  .empty{ text-align:center; color:#9a8a7c; padding:40px 0; font-size:0.9rem; }
+
+  .hidden{ display:none !important; }
+  .login{ max-width:360px; margin:12vh auto 0; background:#fff; border:1px solid var(--line); border-radius:16px; padding:28px 22px; text-align:center; }
+  .login h2{ margin:0 0 6px; font-size:1.2rem; font-weight:800; }
+  .login p{ margin:0 0 18px; font-size:0.85rem; color:#6b5c4e; }
+  .login input, .settings input{ width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; font-family:inherit; font-size:1rem; background:var(--paper); color:var(--coffee-900); text-align:center; }
+  .login button, .settings button.primary{ width:100%; margin-top:12px; padding:12px; background:var(--coffee-900); color:var(--cream); border:none; border-radius:10px; font-weight:700; font-size:0.95rem; font-family:inherit; cursor:pointer; }
+  .login-err{ color:#B3452B; font-size:0.82rem; margin-top:10px; min-height:1.2em; }
+  .settings{ margin-bottom:14px; font-size:0.85rem; }
+  .settings summary{ cursor:pointer; color:#6b5c4e; font-weight:600; }
+  .settings .box{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:8px; }
+  .settings button.ghost{ width:100%; margin-top:8px; padding:10px; background:transparent; color:#B3452B; border:1px solid var(--line); border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer; }
+  .settings .msg{ font-size:0.8rem; margin-top:8px; min-height:1.1em; color:var(--olive); }
+</style>
+</head>
+<body>
+<div class="login" id="loginView">
+  <h2>پنل سفارشات هانی‌مون</h2>
+  <p>برای ورود رمز رو وارد کن</p>
+  <input type="email" value="moj.elevator.co@gmail.com" autocomplete="username" class="hidden" tabindex="-1" readonly>
+  <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password">
+  <button id="loginBtn">ورود</button>
+  <div class="login-err" id="loginErr"></div>
+</div>
+
+<div class="wrap hidden" id="appView">
+  <header>
+    <h1>پنل سفارشات هانی‌مون</h1>
+    <div><span class="status-dot" id="statusDot"></span><span class="status-text" id="statusText">در حال اتصال...</span></div>
+  </header>
+  <details class="settings">
+    <summary>تنظیمات</summary>
+    <div class="box">
+      <input type="password" id="newPass" placeholder="رمز جدید (حداقل ۸ کاراکتر)" autocomplete="new-password">
+      <button class="primary" id="changePassBtn">تغییر رمز</button>
+      <div class="msg" id="passMsg"></div>
+      <button class="ghost" id="logoutBtn">خروج</button>
+    </div>
+  </details>
+  <button class="enable-sound" id="soundBtn">فعال‌سازی صدای اعلان 🔔</button>
+  <div id="orders"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://dgcdofofullmvwnfayys.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnY2RvZm9mdWxsbXZ3bmZheXlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTM0MDEsImV4cCI6MjEwNjA2OTQwMX0.DeygayxHUWbU1VVMBZoTySEr4u3J8lPrKA-KWiur5AE";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let audioCtx = null;
+let soundEnabled = false;
+
+function playBeep(){
+  if(!soundEnabled) return;
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    for(let i=0;i<2;i++){
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.type = 'sine';
+      o.frequency.value = 880;
+      const t = audioCtx.currentTime + i*0.35;
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.exponentialRampToValueAtTime(0.3, t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t+0.28);
+      o.start(t); o.stop(t+0.3);
+    }
+  }catch(e){}
+}
+
+document.getElementById('soundBtn').addEventListener('click', () => {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume();
+  soundEnabled = true;
+  document.getElementById('soundBtn').textContent = 'صدای اعلان فعاله ✓';
+  document.getElementById('soundBtn').disabled = true;
+  playBeep();
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+});
+
+function timeAgo(iso){
+  const d = new Date(iso);
+  return d.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+}
+
+function esc(v){ return String(v==null?'':v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function renderOrder(o, isNew){
+  const isTake = o.order_type === 'takeaway';
+  const kind = isTake ? 'take' : 'dine';
+  const div = document.createElement('div');
+  div.className = 'order ' + kind + (isNew ? ' new' : '') + (o.seen ? ' done' : '');
+  div.dataset.id = o.id;
+  const pack = Number(o.packaging_fee) || 0, del = Number(o.delivery_fee) || 0;
+  div.innerHTML = `
+    <div class="order-top">
+      <span><span class="order-name">${esc(o.name)}</span><span class="badge ${kind}">${isTake ? 'بیرون‌بر' : 'حضوری'}</span></span>
+      <span class="order-time">${timeAgo(o.created_at)}</span>
+    </div>
+    <div class="order-code">کد #${esc(o.code)}</div>
+    <div class="order-items">${esc(o.items)}</div>
+    ${isTake ? `<div class="order-contact">
+        تلفن: <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a><br>
+        آدرس: ${esc(o.address)}
+      </div>` : ''}
+    ${o.note ? `<div class="order-note">توضیح: ${esc(o.note)}</div>` : ''}
+    ${isTake && (pack || del) ? `<div class="order-fees">شامل هزینه‌ی پک ${Number(pack).toLocaleString('fa-IR')} و کرایه‌ی ارسال ${Number(del).toLocaleString('fa-IR')} هزار تومان</div>` : ''}
+    <div class="order-total">${Number(o.total).toLocaleString('fa-IR')} هزار تومان</div>
+    <div class="order-actions">
+      <button class="done-btn" ${o.seen ? 'disabled' : ''}>${o.seen ? 'انجام شد ✓' : 'علامت به‌عنوان انجام‌شده'}</button>
+    </div>
+  `;
+  div.querySelector('.done-btn').addEventListener('click', async (e) => {
+    e.target.disabled = true;
+    e.target.textContent = 'انجام شد ✓';
+    div.classList.add('done');
+    await sb.from('orders').update({ seen: true }).eq('id', o.id);
+  });
+  return div;
+}
+
+async function loadOrders(){
+  const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false }).limit(50);
+  const container = document.getElementById('orders');
+  container.innerHTML = '';
+  if(error || !data || data.length === 0){
+    container.innerHTML = `<div class="empty">هنوز سفارشی ثبت نشده.</div>`;
+    return;
+  }
+  data.forEach(o => container.appendChild(renderOrder(o, false)));
+}
+
+let channel = null;
+function subscribeRealtime(){
+  if(channel){ sb.removeChannel(channel); channel = null; }
+  channel = sb.channel('orders-live')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
+      const container = document.getElementById('orders');
+      const empty = container.querySelector('.empty');
+      if(empty) empty.remove();
+      const el = renderOrder(payload.new, true);
+      container.prepend(el);
+      playBeep();
+      if('Notification' in window && Notification.permission === 'granted'){
+        new Notification((payload.new.order_type === 'takeaway' ? 'سفارش بیرون‌بر جدید' : 'سفارش حضوری جدید'), { body: `${payload.new.name} — ${Number(payload.new.total).toLocaleString('fa-IR')} هزار تومان` });
+      }
+    })
+    .subscribe(status => {
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      if(status === 'SUBSCRIBED'){
+        dot.classList.add('live');
+        text.textContent = 'متصل — منتظر سفارش';
+      }else{
+        dot.classList.remove('live');
+        text.textContent = 'در حال اتصال...';
+      }
+    });
+}
+
+const OWNER_EMAIL = "moj.elevator.co@gmail.com";
+
+function showApp(){
+  document.getElementById('loginView').classList.add('hidden');
+  document.getElementById('appView').classList.remove('hidden');
+  loadOrders();
+  subscribeRealtime();
+}
+function showLogin(){
+  if(channel){ sb.removeChannel(channel); channel = null; }
+  document.getElementById('appView').classList.add('hidden');
+  document.getElementById('loginView').classList.remove('hidden');
+  document.getElementById('orders').innerHTML = '';
+}
+
+async function doLogin(){
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginErr');
+  if(!pass){ errEl.textContent = 'رمز رو وارد کن.'; return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; errEl.textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email: OWNER_EMAIL, password: pass });
+  btn.disabled = false;
+  if(error){
+    errEl.textContent = (error.status === 429) ? 'تلاش‌های زیاد؛ چند دقیقه بعد دوباره امتحان کن.' : 'رمز اشتباهه.';
+    return;
+  }
+  document.getElementById('loginPass').value = '';
+  showApp();
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+document.getElementById('logoutBtn').addEventListener('click', () => sb.auth.signOut());
+
+document.getElementById('changePassBtn').addEventListener('click', async () => {
+  const np = document.getElementById('newPass').value;
+  const msg = document.getElementById('passMsg');
+  if(np.length < 8){ msg.style.color = '#B3452B'; msg.textContent = 'رمز باید حداقل ۸ کاراکتر باشه.'; return; }
+  const { error } = await sb.auth.updateUser({ password: np });
+  if(error){ msg.style.color = '#B3452B'; msg.textContent = 'تغییر نکرد: ' + error.message; }
+  else { msg.style.color = ''; msg.textContent = 'رمز عوض شد.'; document.getElementById('newPass').value = ''; }
+});
+
+sb.auth.onAuthStateChange((event) => { if(event === 'SIGNED_OUT') showLogin(); });
+
+(async () => {
+  const { data } = await sb.auth.getSession();
+  if(data && data.session) showApp(); else showLogin();
+})();
+</script>
+</body>
+</html>
