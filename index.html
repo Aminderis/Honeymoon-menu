@@ -152,33 +152,9 @@
 </div>
 
 <script>
-const MENU = /*MENU_DATA_START*/{
-  hot: { title:"قهوه‌ی گرم", en:"Hot Coffee", items:[
-    {id:"espresso", name:"اسپرسو", desc:"شات تکی از دان تازه‌آسیاب، عصاره‌ی غلیظ و معطر.", price:45},
-    {id:"americano", name:"آمریکانو", desc:"اسپرسو رقیق‌شده با آب گرم، طعمی ملایم‌تر.", price:55},
-    {id:"cappuccino", name:"کاپوچینو", desc:"اسپرسو با شیر بخاردیده و فوم ابری.", price:65},
-    {id:"latte", name:"لاته وانیل", desc:"لاته کلاسیک با شربت وانیل خانگی.", price:70}
-  ]},
-  cold: { title:"نوشیدنی سرد", en:"Cold Drinks", items:[
-    {id:"iced-latte", name:"آیس لاته", desc:"اسپرسو، شیر سرد و یخ؛ ساده و خنک.", price:75},
-    {id:"cold-brew", name:"کلد برو", desc:"دم‌آوری سرد ۱۸ ساعته، تلخی ملایم.", price:85},
-    {id:"mojito", name:"موهیتو توت‌فرنگی", desc:"نعنا تازه، لیموترش و پوره‌ی توت‌فرنگی.", price:90}
-  ]},
-  tea: { title:"دمنوش و چای", en:"Tea & Infusions", items:[
-    {id:"masala", name:"چای ماسالا", desc:"دم‌کرده با هل، دارچین و زنجبیل.", price:50},
-    {id:"flower", name:"دمنوش گل‌ها", desc:"ترکیب گل رز، بابونه و آویشن.", price:45}
-  ]},
-  dessert: { title:"دسر و کیک", en:"Desserts", items:[
-    {id:"cheesecake", name:"چیزکیک کارامل نمکی", desc:"تهیه‌شده در کافه، سرو با سس کارامل.", price:88},
-    {id:"brownie", name:"براونی گردو", desc:"مغزدار و فادج، سرو گرم به‌سفارش.", price:75}
-  ]},
-  bites: { title:"میان‌وعده", en:"Light Bites", items:[
-    {id:"croissant-sw", name:"ساندویچ کرواسان مرغ", desc:"مرغ گریل، سس مخصوص و سبزیجات تازه.", price:120},
-    {id:"avocado", name:"توست آووکادو", desc:"نان تست سبوس‌دار، آووکادو و تخم‌مرغ آب‌پز.", price:105}
-  ]}
-}/*MENU_DATA_END*/;
+const MENU = /*MENU_DATA_START*/{"hot":{"title":"قهوه‌ی گرم","en":"Hot Coffee","items":[{"id":"espresso","name":"اسپرسو","desc":"شات تکی از دان تازه‌آسیاب، عصاره‌ی غلیظ و معطر.","price":45,"img":"images/espresso-mul49xub.jpg"},{"id":"americano","name":"آمریکانو","desc":"اسپرسو رقیق‌شده با آب گرم، طعمی ملایم‌تر.","price":55},{"id":"cappuccino","name":"کاپوچینو","desc":"اسپرسو با شیر بخاردیده و فوم ابری.","price":65},{"id":"latte","name":"لاته وانیل","desc":"لاته کلاسیک با شربت وانیل خانگی.","price":70}]},"cold":{"title":"نوشیدنی سرد","en":"Cold Drinks","items":[{"id":"iced-latte","name":"آیس لاته","desc":"اسپرسو، شیر سرد و یخ؛ ساده و خنک.","price":75},{"id":"cold-brew","name":"کلد برو","desc":"دم‌آوری سرد ۱۸ ساعته، تلخی ملایم.","price":85},{"id":"mojito","name":"موهیتو توت‌فرنگی","desc":"نعنا تازه، لیموترش و پوره‌ی توت‌فرنگی.","price":90}]},"tea":{"title":"دمنوش و چای","en":"Tea & Infusions","items":[{"id":"masala","name":"چای ماسالا","desc":"دم‌کرده با هل، دارچین و زنجبیل.","price":50},{"id":"flower","name":"دمنوش گل‌ها","desc":"ترکیب گل رز، بابونه و آویشن.","price":45}]},"dessert":{"title":"دسر و کیک","en":"Desserts","items":[{"id":"cheesecake","name":"چیزکیک کارامل نمکی","desc":"تهیه‌شده در کافه، سرو با سس کارامل.","price":88},{"id":"brownie","name":"براونی گردو","desc":"مغزدار و فادج، سرو گرم به‌سفارش.","price":75}]},"bites":{"title":"میان‌وعده","en":"Light Bites","items":[{"id":"croissant-sw","name":"ساندویچ کرواسان مرغ","desc":"مرغ گریل، سس مخصوص و سبزیجات تازه.","price":120},{"id":"avocado","name":"توست آووکادو","desc":"نان تست سبوس‌دار، آووکادو و تخم‌مرغ آب‌پز.","price":105}]}}/*MENU_DATA_END*/;
 
-const FEES = /*FEES_START*/{"pack":0,"delivery":0}/*FEES_END*/;
+const FEES = /*FEES_START*/{"pack":50,"delivery":70}/*FEES_END*/;
 const cart = {};
 const fa = n => n.toLocaleString('fa-IR');
 
